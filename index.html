@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SISTEMA DE SEGURIDAD COMPROMETIDO</title>
+    <style>
+        /* Estilos Generales */
+        body {
+            background-color: #000;
+            color: #0f0;
+            font-family: 'Consolas', 'Courier New', monospace;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Oculta barras de desplazamiento */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+            position: relative; /* Necesario para el glitch */
+            user-select: none; /* Evita la selección de texto */
+            -webkit-user-select: none; /* Para Safari */
+            -moz-user-select: none; /* Para Firefox */
+            -ms-user-select: none; /* Para IE/Edge */
+            touch-action: none; /* Bloquea el scroll y zoom táctil */
+        }
+
+        /* Bloqueo táctil (capa invisible sobre todo) */
+        /* Bloqueo táctil (capa invisible sobre todo) */
+        #touchBlocker {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1000; 
+            background: transparent; 
+            cursor: none;
+            /* --- ¡IMPORTANTE PARA PC! --- */
+            pointer-events: none; /* Permite que los clics pasen a través de esta capa */
+            /* ... (otros estilos) ... */
+        }
+
+        /* Estilo para el contenedor principal del mensaje */
+        .hacker-container {
+            width: 90%;
+            max-width: 600px;
+            border: 2px solid #0f0;
+            padding: 20px;
+            box-shadow: 0 0 10px #0f0, 0 0 20px #0f0 inset;
+            text-align: left;
+            z-index: 2; /* Por encima del glitch */
+            position: relative;
+            background: rgba(0,0,0,0.8); /* Fondo semi-transparente para legibilidad */
+        }
+
+        .advertencia {
+            color: #ff0;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            text-shadow: 0 0 5px #ff0;
+            animation: pulse 1s infinite alternate;
+            text-align: center;
+        }
+
+        @keyframes pulse {
+            from { opacity: 1; }
+            to { opacity: 0.5; }
+        }
+
+        .linea {
+            white-space: pre-wrap;
+            overflow: hidden;
+            border-right: .15em solid #0f0;
+            padding-right: 5px;
+            font-size: 1.1em;
+            min-height: 1.1em;
+            animation: blink-caret .75s step-end infinite;
+            max-width: 100%;
+            word-wrap: break-word;
+            margin-bottom: 20px;
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #0f0; }
+        }
+
+        .texto-estatico {
+            color: #0f0;
+            margin-top: 20px;
+            font-size: 0.9em;
+            opacity: 0.7;
+        }
+
+        /* Botón de Disculparse */
+        #disculparseBtn {
+            display: block; /* Para que ocupe todo el ancho */
+            margin-top: 30px;
+            padding: 15px 30px;
+            background-color: #f00; /* Rojo de advertencia */
+            color: #fff;
+            border: 3px solid #ff0; /* Borde amarillo brillante */
+            font-size: 1.5em;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            text-transform: uppercase;
+            box-shadow: 0 0 15px #f00;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            z-index: 2; /* Por encima del glitch */
+            position: relative;
+            animation: pulsateButton 1.5s infinite alternate; /* Animación de pulsación para el botón */
+        }
+
+        #disculparseBtn:hover {
+            background-color: #c00;
+            box-shadow: 0 0 25px #f00;
+        }
+
+        @keyframes pulsateButton {
+            0% { transform: scale(1); box-shadow: 0 0 15px #f00; }
+            50% { transform: scale(1.02); box-shadow: 0 0 25px #ff0; }
+            100% { transform: scale(1); box-shadow: 0 0 15px #f00; }
+        }
+
+        /* Mensaje de Broma Final */
+        #bromaFinal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.95);
+            color: #0f0;
+            font-size: 2em;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 1001; /* Por encima de todo */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 1s ease-in-out;
+            text-shadow: 0 0 10px #0f0;
+        }
+
+        #bromaFinal.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* GLITCH EFFECT */
+        /* Contenedores para las capas del glitch */
+        .glitch-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* No interactuable */
+            z-index: 1; /* Por debajo del contenido principal */
+            background-color: #000;
+        }
+
+        .glitch-layer:nth-child(1) { clip-path: inset(0 0 98% 0); }
+        .glitch-layer:nth-child(2) { clip-path: inset(0 0 98% 0); }
+        .glitch-layer:nth-child(3) { clip-path: inset(0 0 98% 0); }
+
+        .glitch-layer::before,
+        .glitch-layer::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 0, 0, 0.1); /* Rojo para uno */
+            filter: blur(2px);
+            opacity: 0;
+            animation: glitch-color-1 3s infinite alternate-reverse;
+        }
+
+        .glitch-layer::after {
+            background-color: rgba(0, 0, 255, 0.1); /* Azul para el otro */
+            animation: glitch-color-2 3s infinite alternate-reverse;
+        }
+
+        @keyframes glitch-color-1 {
+            0% { transform: translate(0, 0); opacity: 0; }
+            20% { transform: translate(-5px, 0); opacity: 1; }
+            40% { transform: translate(5px, 0); opacity: 0; }
+            60% { transform: translate(-3px, 0); opacity: 1; }
+            80% { transform: translate(3px, 0); opacity: 0; }
+            100% { transform: translate(0, 0); opacity: 0; }
+        }
+
+        @keyframes glitch-color-2 {
+            0% { transform: translate(0, 0); opacity: 0; }
+            20% { transform: translate(5px, 0); opacity: 1; }
+            40% { transform: translate(-5px, 0); opacity: 0; }
+            60% { transform: translate(3px, 0); opacity: 1; }
+            80% { transform: translate(-3px, 0); opacity: 0; }
+            100% { transform: translate(0, 0); opacity: 0; }
+        }
+
+        /* Glitch de las barras horizontales */
+        .glitch-scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden; /* Importante para que las barras no se salgan */
+        }
+
+        .glitch-scanline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 10px; /* Altura de la barra de glitch */
+            background: linear-gradient(to right, #0f0, #0a0, #0f0);
+            box-shadow: 0 0 5px #0f0;
+            opacity: 0.3;
+            animation: scanline-glitch 5s infinite linear;
+        }
+
+        @keyframes scanline-glitch {
+            0% { transform: translateY(-100%); opacity: 0.3; }
+            20% { transform: translateY(10%); opacity: 0.6; }
+            40% { transform: translateY(30%); opacity: 0.4; }
+            60% { transform: translateY(60%); opacity: 0.7; }
+            80% { transform: translateY(85%); opacity: 0.5; }
+            100% { transform: translateY(200%); opacity: 0.2; } /* Se desplaza fuera y vuelve */
+        }
+
+        /* Animación general de sacudida para el body */
+        body.glitch-shake {
+            animation: screen-shake 0.1s infinite alternate;
+        }
+
+        @keyframes screen-shake {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(1px, -1px); }
+            50% { transform: translate(-1px, 1px); }
+            75% { transform: translate(1px, 1px); }
+            100% { transform: translate(-1px, -1px); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="touchBlocker"></div>
+
+    <div class="glitch-layer"></div>
+    <div class="glitch-layer"></div>
+    <div class="glitch-layer"></div>
+
+    <div class="glitch-scanline"></div>
+
+    <div class="hacker-container">
+        <div class="advertencia">
+            >>> ACCESO ILEGAL DETECTADO <<<
+        </div>
+        
+        <div id="mensaje" class="linea"></div>
+
+        <div class="texto-estatico">
+            <p>[!] Nivel de amenaza: CRÍTICO</p>
+            <p>[!] Acceso al sistema: TOTAL</p>
+            <p>[!] Geolocalización: ADQUIRIDA</p>
+            <p>[!] Contactos y datos: COMPROMETIDOS</p>
+            <p>[!] Cifrado: ANULADO</p>
+            <p>[!] Estado: CONTROL ABSOLUTO</p>
+        </div>
+
+        <button id="disculparseBtn">¡DISCÚLPATE AHORA!</button>
+    </div>
+
+    <div id="bromaFinal">
+        ¡JAJAJA! ¡Caíste! <br> Era solo una broma, amigo. 😉 <br>¿O no? 😂
+    </div>
+
+    <script>
+        const mensajeElemento = document.getElementById('mensaje');
+        const touchBlocker = document.getElementById('touchBlocker');
+        const disculparseBtn = document.getElementById('disculparseBtn');
+        const bromaFinal = document.getElementById('bromaFinal');
+        const body = document.body;
+
+        const textoOriginal = "Hemos accedido a tu dispositivo. Todos tus datos están en nuestras manos. No hay escapatoria. Tu única opción es cooperar. Somos los que te observamos...";
+        let indice = 0;
+        
+        function escribir() {
+            if (indice < textoOriginal.length) {
+                mensajeElemento.textContent += textoOriginal.charAt(indice);
+                indice++;
+                setTimeout(escribir, 50); // Velocidad de escritura
+            } else {
+                mensajeElemento.style.borderRight = 'none';
+                mensajeElemento.style.animation = 'none';
+                // Una vez que el mensaje está completo, el botón "Disculparse" se hace interactivo
+                disculparseBtn.disabled = false;
+                disculparseBtn.style.cursor = 'pointer';
+            }
+        }
+
+        // --- Event Listener para el botón de Disculparse ---
+        disculparseBtn.addEventListener('click', () => {
+            // Desactiva el botón para evitar clics múltiples
+            disculparseBtn.disabled = true;
+            disculparseBtn.style.cursor = 'default';
+
+            // Oculta el contenido principal y el bloqueador táctil
+            document.querySelector('.hacker-container').style.display = 'none';
+            touchBlocker.style.display = 'none';
+            
+            // Muestra el mensaje final de la broma
+            bromaFinal.classList.add('visible');
+
+            // Elimina la animación de glitch de sacudida
+            body.classList.remove('glitch-shake');
+
+            // Después de 5 segundos, recarga la página para "normalizar" o redirige
+            setTimeout(() => {
+                // Puedes recargar la página:
+                window.location.reload();
+                // O redirigir a una página normal, por ejemplo, Google:
+                // window.location.href = 'https://www.google.com';
+            }, 5000); // El mensaje de broma estará visible por 5 segundos
+        });
+
+        // --- Inicialización al cargar la página ---
+        window.onload = () => {
+            // Deshabilita el botón inicialmente hasta que el mensaje termine de escribirse
+            disculparseBtn.disabled = true;
+            disculparseBtn.style.cursor = 'default';
+
+            // Inicia el efecto de máquina de escribir
+            escribir();
+
+            // Activa la animación de sacudida del body para el glitch
+            body.classList.add('glitch-shake');
+        };
+
+        // --- Bloqueo de gestos táctiles y zoom ---
+        // Esto es crucial para un bloqueo táctil efectivo en móviles
+        document.addEventListener('gesturestart', (e) => e.preventDefault());
+        document.addEventListener('touchstart', (e) => {
+            // Impedir el scroll por defecto si no es el botón
+            if (e.target.id !== 'disculparseBtn') {
+                e.preventDefault();
+            }
+        }, { passive: false });
+        document.addEventListener('touchmove', (e) => {
+            if (e.target.id !== 'disculparseBtn') {
+                e.preventDefault();
+            }
+        }, { passive: false });
+        document.addEventListener('touchend', (e) => {
+             if (e.target.id !== 'disculparseBtn') {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        // Bloquear click derecho (solo para escritorio, pero no sobra)
+        document.addEventListener('contextmenu', (e) => e.preventDefault());
+    </script>
+
+</body>
+</html>
